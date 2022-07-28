@@ -111,6 +111,39 @@ proc read*(uart: var Uart;
     var nb = buff[0..<bytes_read]
     result = nb
 
+# Takes a pre-allocated seq[byte] or array[len, byte]
+# Note: You should empty the buffer 
+proc read*(uart: var Uart,
+           size = 1024.SzBytes,
+           wait: Ticks = 10.Millis,
+           buff: var openarray[byte]): cint =
+  let sz = size.uint32
+
+  # TODO: Make this a compile-time option to remove check
+  if size.int > buff.len:
+    raise newEspError[EspError]("uart logic error: size is greater than buff.len", ESP_ERR_INVALID_ARG)
+
+  var bytes_avail = csize_t(0)
+  check: uart_get_buffered_data_len(uart.port, addr bytes_avail)
+
+  if bytes_avail == 0: return
+  
+  let bytes_read = uart_read_bytes(uart.port, addr(buff[0]), sz, wait)
+
+  if bytes_read < 0:
+    var bytes_read_str = $bytes_read
+    raise newEspError[EspError]("uart error: " & $bytes_read_str, bytes_read)
+
+
+# Specialise with a compile-time check of size vs buff length
+# proc read*[ArrSize](uart: var Uart,
+#            size = 1024.SzBytes,
+#            wait: Ticks = 10.Millis,
+#            buff: var array[ArrSize, byte]): cint =
+#   when len(buff).SzBytes < size:
+#     {.error: fmt"Not enough space in 'buff', to read {size}, bytes".}
+#   result = read(uart, size, wait, buff)
+
 proc write*(uart: var Uart;
             data: openArray[byte]): SzBytes {.discardable.} =
 
@@ -126,3 +159,13 @@ proc write*(uart: var Uart;
 
   write(uart, data.toOpenArray(0, data.high()))
 
+
+proc write*[ArrSize](
+  uart: var Uart,
+  data: var array[ArrSize, byte]
+): SzBytes {.discardable.} =
+
+  # // Write data to UART from fixed-length array
+  let bytes_written = uart_write_bytes(uart.port, cast[cstring](addr data), data.len.csize_t)
+
+  result = bytes_written.SzBytes()
