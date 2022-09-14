@@ -50,6 +50,13 @@ proc ESP_NETIF_DEFAULT_ETH*(): esp_netif_config_t =
         stack: ESP_NETIF_NETSTACK_DEFAULT_ETH,
   )
 
+proc ESP_NETIF_DEFAULT_PPP*(): esp_netif_config_t =
+  return esp_netif_config_t(
+    base: ESP_NETIF_BASE_DEFAULT_PPP,
+    driver: nil,
+    stack: ESP_NETIF_NETSTACK_DEFAULT_PPP,
+  )
+
 ##  /**
 ##   * @brief  Default configuration reference of WIFI AP
 ##   */

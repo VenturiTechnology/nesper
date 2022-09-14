@@ -99,13 +99,13 @@ proc setStr*(nvs: NvsObject, key: string, data: string) =
 
 proc getStr*(nvs: NvsObject, key: string): Option[string] =
   var required_size: csize_t
-  var nvs_error: esp_err_t = nvs_get_str(nvs.handle, "DataCollected", nil, addr(required_size))
+  var nvs_error: esp_err_t = nvs_get_str(nvs.handle, cstring key, nil, addr(required_size))
 
   case nvs_error
   of ESP_OK:
     echo("successfully grabbed string size, loading in value..")
     var data: string = newStringOfCap(required_size)
-    nvs_error = nvs_get_str(nvs.handle, "DataCollected", data.cstring, addr(required_size))
+    nvs_error = nvs_get_str(nvs.handle, cstring key, data.cstring, addr(required_size))
 
     if (nvs_error != ESP_OK):
       raise newEspError[NvsError]("Error reading string (" & $esp_err_to_name(nvs_error) & ")", nvs_error)
