@@ -11,7 +11,7 @@
 ##  See the License for the specific language governing permissions and
 ##  limitations under the License.
 
-import esp_netif
+import esp_netif_types
 
 const netif_def_headers = """#include "esp_netif.h" 
                              #include "esp_netif_defaults.h" """
@@ -48,6 +48,13 @@ proc ESP_NETIF_DEFAULT_ETH*(): esp_netif_config_t =
         base: ESP_NETIF_BASE_DEFAULT_ETH,
         driver: nil,
         stack: ESP_NETIF_NETSTACK_DEFAULT_ETH,
+  )
+
+proc ESP_NETIF_DEFAULT_PPP*(): esp_netif_config_t =
+  return esp_netif_config_t(
+    base: ESP_NETIF_BASE_DEFAULT_PPP,
+    driver: nil,
+    stack: ESP_NETIF_NETSTACK_DEFAULT_PPP,
   )
 
 ##  /**
