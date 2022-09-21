@@ -100,10 +100,10 @@ proc logPartionInfo*(ota: OtaUpdateHandle) =
 proc begin*(ota: OtaUpdateHandle) =
   let err = esp_ota_begin(ota.update, OTA_SIZE_UNKNOWN, addr(ota.handle))
   if err != ESP_OK:
-    TAG.loge("esp_ota_begin failed (%s)", repr(ota.update))
+    TAG.loge("esp_ota_begin failed (%s)", repr(ota.update).cstring)
     raise newEspError[OtaError]("Error ota begin: " & $esp_err_to_name(err), err)
 
-proc checkImageHeader*(ota: OtaUpdateHandle, data: var string; version_check = true):
+proc checkImageHeader*[T: byte or char](ota: OtaUpdateHandle, data: var openArray[T]; version_check = true):
       tuple[status: OtaUpdateStatus, info: esp_app_desc_t] =
 
     var new_app_info: esp_app_desc_t
@@ -122,16 +122,21 @@ proc checkImageHeader*(ota: OtaUpdateHandle, data: var string; version_check = t
             addr data[sz_image_hdr + sz_image_seg_hdr],
             sizeof(esp_app_desc_t))
 
-    TAG.logw("Writing New firmware version: %s", new_app_info.versionStr())
+    TAG.logw("Writing New firmware version: %s", new_app_info.versionStr().cstring)
     if not version_check:
       return (status: VersionUnchecked, info: new_app_info)
 
     var currApp: esp_app_desc_t = currentFirmwareInfo()
-    TAG.logi("Running firmware version: %s on date: %s at %s", currApp.versionStr(), currApp.dateStr(), currApp.timeStr())
+    TAG.logi(
+      "Running firmware version: %s on date: %s at %s", 
+      currApp.versionStr().cstring, 
+      currApp.dateStr().cstring, 
+      currApp.timeStr().cstring
+    )
 
     var lastInvApp: Option[esp_app_desc_t] = lastInvalidFirmwareInfo()
     if lastInvApp.isSome():
-      TAG.logi("Last invalid firmware version: %s", lastInvApp.get().versionStr())
+      TAG.logi("Last invalid firmware version: %s", lastInvApp.get().versionStr().cstring)
 
     if lastInvApp.isSome() and lastInvApp.get().version == currApp.version:
       TAG.logw("New version is the same as invalid version.")
@@ -145,16 +150,22 @@ proc checkImageHeader*(ota: OtaUpdateHandle, data: var string; version_check = t
 
     return (status: VersionNewer, info: new_app_info)
 
-proc write*(ota: var OtaUpdateHandle, write_data: var string) =
+proc checkImageHeader*(ota: OtaUpdateHandle, data: var string; version_check = true): tuple[status: OtaUpdateStatus, info: esp_app_desc_t] =
+  checkImageHeader(ota, data.toOpenArray(0, data.high) , version_check)
+
+proc write*[T: byte or char](ota: var OtaUpdateHandle, write_data: var openArray[T]) =
   let err = esp_ota_write(ota.handle, addr write_data[0], write_data.len().csize_t)
   if err != ESP_OK:
     raise newEspError[OtaError]("Error ota write: " & $esp_err_to_name(err), err)
   ota.total_written.inc(write_data.len())
 
+proc write*(ota: var OtaUpdateHandle, write_data: var string) =
+  write(ota, write_data.toOpenArray(0, write_data.high))
+
 proc finish*(ota: var OtaUpdateHandle) =
   let err = esp_ota_end(ota.handle)
   if err.uint32 == ESP_ERR_OTA_VALIDATE_FAILED:
-    TAG.loge("Image validation failed, image is corrupted %s", $esp_err_to_name(err))
+    TAG.loge("Image validation failed, image is corrupted %s", esp_err_to_name(err))
     raise newEspError[OtaError]("Image validation failed, image is corrupted", err)
   if err != ESP_OK:
     raise newEspError[OtaError]("Error ota end: " & $esp_err_to_name(err), err)
