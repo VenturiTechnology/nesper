@@ -162,6 +162,12 @@ proc write*[T: byte or char](ota: var OtaUpdateHandle, write_data: var openArray
 proc write*(ota: var OtaUpdateHandle, write_data: var string) =
   write(ota, write_data.toOpenArray(0, write_data.high))
 
+proc write*[T: byte or char](ota: var OtaUpdateHandle, write_data: ptr UncheckedArray[T], write_len: csize_t) =
+  let err = esp_ota_write(ota.handle, addr write_data[0], write_len)
+  if err != ESP_OK:
+    raise newEspError[OtaError]("Error ota write: " & $esp_err_to_name(err), err)
+  ota.total_written.inc(write_len.int)
+
 proc finish*(ota: var OtaUpdateHandle) =
   let err = esp_ota_end(ota.handle)
   if err.uint32 == ESP_ERR_OTA_VALIDATE_FAILED:
