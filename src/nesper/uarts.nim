@@ -113,10 +113,12 @@ proc read*(uart: var Uart;
 
 # Takes a pre-allocated seq[byte] or array[len, byte]
 # Note: You should empty the buffer 
-proc read*(uart: var Uart,
-           size = 1024.SzBytes,
-           wait: Ticks = 10.Millis,
-           buff: var openarray[byte]): cint =
+proc read*(
+  uart: var Uart,
+  buff: var openarray[byte],
+  size = 1024.SzBytes,
+  wait: Ticks = 10.Millis
+): cint =
   let sz = size.uint32
 
   # TODO: Make this a compile-time option to remove check
@@ -133,6 +135,7 @@ proc read*(uart: var Uart,
   if bytes_read < 0:
     var bytes_read_str = $bytes_read
     raise newEspError[EspError]("uart error: " & $bytes_read_str, bytes_read)
+  return bytes_read
 
 
 # Specialise with a compile-time check of size vs buff length
