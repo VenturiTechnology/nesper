@@ -95,7 +95,7 @@ type
 
 
 type
-  TaskFunction_t* = proc (a1: pointer) {.cdecl.}
+  TaskFunction_t*[T: ptr or ref] = proc (a1: T) {.cdecl.}
 
 ##  Converts a time in milliseconds to a time in ticks.
 
@@ -148,7 +148,7 @@ var tskNO_AFFINITY* {.importc: "tskNO_AFFINITY", header: theader.}: cint
 ##
 
 type
-  TaskHandle_t* {.importc: "TaskHandle_t", header: "freertos/FreeRTOS.h".} = pointer
+  TaskHandle_t* {.importc: "TaskHandle_t", header: theader.} = pointer
 
 ## *
 ##  Defines the prototype to which the application task hook function must
@@ -207,8 +207,8 @@ type
 ##
 
 type
-  TaskParameters_t* {.importc: "TaskParameters_t", header: theader, bycopy.} = object
-    pvTaskCode* {.importc: "pvTaskCode".}: TaskFunction_t
+  TaskParameters_t*[T] {.importc: "TaskParameters_t", header: theader, bycopy.} = object
+    pvTaskCode* {.importc: "pvTaskCode".}: TaskFunction_t[T]
     pcName* {.importc: "pcName".}: cstring ## lint !e971 Unqualified char types are allowed for strings and single characters only.
     usStackDepth* {.importc: "usStackDepth".}: uint32
     pvParameters* {.importc: "pvParameters".}: pointer
@@ -382,10 +382,10 @@ const
 ##  \ingroup Tasks
 ##
 
-proc xTaskCreatePinnedToCore*(pvTaskCode: TaskFunction_t;
+proc xTaskCreatePinnedToCore*[T: ptr or ref](pvTaskCode: TaskFunction_t[T];
                                 pcName: cstring;
                                 usStackDepth: uint32;
-                                pvParameters: pointer;
+                                pvParameters: T;
                                 uxPriority: UBaseType_t;
                                 pvCreatedTask: ptr TaskHandle_t;
                                 xCoreID: BaseType_t
@@ -474,11 +474,11 @@ proc xTaskCreatePinnedToCore*(pvTaskCode: TaskFunction_t;
 ##  \ingroup Tasks
 ##
 
-proc xTaskCreate*(pvTaskCode: TaskFunction_t; pcName: cstring;
-                 usStackDepth: uint32; pvParameters: pointer;
+proc xTaskCreate*[T: ptr or ref](pvTaskCode: TaskFunction_t[T]; pcName: cstring;
+                 usStackDepth: uint32; pvParameters: T;
                  uxPriority: UBaseType_t; pvCreatedTask: ptr TaskHandle_t): BaseType_t {.
-    inline.} =
-  return xTaskCreatePinnedToCore(pvTaskCode, pcName, usStackDepth, pvParameters,
+    inline, header: theader.} =
+  return xTaskCreatePinnedToCore[T](pvTaskCode, pcName, usStackDepth, pvParameters,
                                 uxPriority, pvCreatedTask, tskNO_AFFINITY)
 
 ## *
@@ -524,8 +524,8 @@ proc xTaskCreate*(pvTaskCode: TaskFunction_t; pcName: cstring;
 ##  \ingroup Tasks
 ##
 
-proc xTaskCreateStaticPinnedToCore*(pvTaskCode: TaskFunction_t; pcName: cstring;
-                                   ulStackDepth: uint32; pvParameters: pointer;
+proc xTaskCreateStaticPinnedToCore*[T: ptr or ref](pvTaskCode: TaskFunction_t[T]; pcName: cstring;
+                                   ulStackDepth: uint32; pvParameters: T;
                                    uxPriority: UBaseType_t;
                                    pxStackBuffer: ptr StackType_t;
                                    pxTaskBuffer: ptr StaticTask_t;
@@ -628,8 +628,8 @@ proc xTaskCreateStaticPinnedToCore*(pvTaskCode: TaskFunction_t; pcName: cstring;
 ##  \ingroup Tasks
 ##
 
-proc xTaskCreateStatic*(pvTaskCode: TaskFunction_t; pcName: cstring;
-                       ulStackDepth: uint32; pvParameters: pointer;
+proc xTaskCreateStatic*[T: ptr or ref](pvTaskCode: TaskFunction_t[T]; pcName: cstring;
+                       ulStackDepth: uint32; pvParameters: T;
                        uxPriority: UBaseType_t; pxStackBuffer: ptr StackType_t;
                        pxTaskBuffer: ptr StaticTask_t): TaskHandle_t {.inline.} =
   return xTaskCreateStaticPinnedToCore(pvTaskCode, pcName, ulStackDepth,
@@ -700,7 +700,7 @@ proc xTaskCreateStatic*(pvTaskCode: TaskFunction_t; pcName: cstring;
 ##  \ingroup Tasks
 ##
 
-proc xTaskCreateRestricted*(pxTaskDefinition: ptr TaskParameters_t;
+proc xTaskCreateRestricted*[T](pxTaskDefinition: ptr TaskParameters_t[T];
                            pxCreatedTask: ptr TaskHandle_t): BaseType_t {.
     importc: "xTaskCreateRestricted", header: theader.}
 ## *
