@@ -78,12 +78,15 @@ proc newUart*(config: var uart_config_t;
 
   # // Setup UART buffered IO with event queue
   # // Install UART driver using an event queue here
-  check: uart_driver_install(result.port,
-                             rx_sz,
-                             tx_sz,
-                             event_size.cint,
-                             if event_size > 0: addr result.events else: nil,
-                             iflags)
+  if not uart_is_driver_installed(result.port):
+    check: uart_driver_install(
+      result.port,
+      rx_sz,
+      tx_sz,
+      event_size.cint,
+      if event_size > 0: addr result.events else: nil,
+      iflags
+    )
   
   return
 
