@@ -10,16 +10,38 @@ import strutils
 from os import getEnv
 from macros import error, warning
 
-const
-  ESP_IDF_VERSION* {.strdefine.} = getEnv("ESP_IDF_VERSION", "0.0").toLower().replace("v","")
-  ESP_IDF_MAJOR* {.intdefine.} = ESP_IDF_VERSION. split(".")[0].parseInt()
-  ESP_IDF_MINOR* {.intdefine.} = ESP_IDF_VERSION.split(".")[1].parseInt()
+template ESP_IDF_VERSION_VAL*(major, minor, patch: int): int = (major shl 16 or minor shl 8 or patch)
 
-static:
+func getEspIdfVersion(): string =
+  var version =  getEnv("ESP_IDF_VERSION", "0.0.0").toLower().replace("v","")
+  let dot_count = version.count(".")
+  if dot_count < 1:
+    version & ".0.0"
+  elif dot_count < 2:
+    version & ".0"
+  else:
+    version
+
+const
+  ESP_IDF_VER {.strdefine: "ESP_IDF_VERSION".} = getEspIdfVersion()
+  ESP_IDF_VER_SPLIT = ESP_IDF_VER.split(".")
+
+  ESP_IDF_MAJOR* {.intdefine.} = block:
+    when ESP_IDF_VER_SPLIT.len >= 1: (try: ESP_IDF_VER_SPLIT[0].parseInt() except ValueError: 0) else: 0
+  ESP_IDF_MINOR* {.intdefine.} = block:
+    when ESP_IDF_VER_SPLIT.len >= 2: (try: ESP_IDF_VER_SPLIT[1].parseInt() except ValueError: 0) else: 0
+  ESP_IDF_PATCH* {.intdefine.} = block:
+    when ESP_IDF_VER_SPLIT.len >= 3: (try: ESP_IDF_VER_SPLIT[2].parseInt() except ValueError: 0) else: 0
+
+  ESP_IDF_VERSION*: int = ESP_IDF_VERSION_VAL(ESP_IDF_MAJOR, ESP_IDF_MINOR, ESP_IDF_PATCH)
+
+template ESP_IDF_VERSION_STR*: string = $ESP_IDF_MAJOR & "." & $ESP_IDF_MINOR & "." & $ESP_IDF_PATCH
+
+static:    
   if ESP_IDF_MAJOR notin [4, 5]:
     error("Incorrect esp-idf major version: " & $ESP_IDF_MAJOR)
-  if ESP_IDF_VERSION == "0.0":
-    warning("ESP_IDF_VERSION: " & ESP_IDF_VERSION)
+  if ESP_IDF_VERSION == ESP_IDF_VERSION_VAL(0, 0, 0):
+    warning("ESP_IDF_VERSION: " & ESP_IDF_VERSION_STR)
     error("Must set esp-idf version using `-d:ESP_IDF_VERSION=4.4` or using an environment variable `export ESP_IDF_VERSION=4.4`")
 
 

@@ -220,7 +220,8 @@ task esp_compile, "Compile Nim project for esp-idf program":
     echo "...cleaning esp-idf build cache"
     rmDir(nopts.projdir / "build")
 
-  echo "ESP_IDF_VERSION: ", nopts.esp_idf_version
+  var esp_idf_version_formatted = nopts.esp_idf_version[0..2]
+  echo "ESP IDF VERSION: ", esp_idf_version_formatted
   let
     nimargs = @[
       "c",
@@ -229,8 +230,8 @@ task esp_compile, "Compile Nim project for esp-idf program":
       "--compileOnly",
       "--nimcache:" & nopts.cachedir.quoteShell(),
       "-d:NimAppMain",
-      "-d:ESP_IDF_V" & nopts.esp_idf_version.replace(".","_"),
-      "-d:ESP_IDF_VERSION=" & nopts.esp_idf_version,
+      "-d:ESP_IDF_V" & esp_idf_version_formatted.replace(".","_"),
+      "-d:ESP_IDF_VERSION=" & esp_idf_version_formatted,
     ].join(" ") 
     childargs = nopts.child_args.mapIt(it.quoteShell()).join(" ")
     wifidefs = nopts.wifi_args

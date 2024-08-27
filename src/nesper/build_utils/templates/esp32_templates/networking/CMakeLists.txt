@@ -1,7 +1,13 @@
+set(requires lwip newlib nvs_flash app_update)
+
+string(SUBSTRING "$${IDF_VER}" 1 3 IDF_VER_VAL_STR)
+if("$${IDF_VER_VAL_STR}" VERSION_GREATER_EQUAL "5.0")
+    list(APPEND requires esp_netif)
+endif()
 
 idf_component_register(SRC_DIRS "$NIMBLE_NIMCACHE"
                     INCLUDE_DIRS ""
-                    REQUIRES lwip newlib nvs_flash app_update)
+                    REQUIRES $${requires})
 
 # set(C_COMPILE_OPTIONS "$${C_COMPILE_OPTIONS} -Wno-error=unused-label")
 # list(APPEND C_COMPILE_OPTIONS "-Wno-error=unused-label ")

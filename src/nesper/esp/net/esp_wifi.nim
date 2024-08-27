@@ -53,7 +53,7 @@
 
 import ../../consts
 import ../../general
-import ../esp_event_legacy
+import ../esp_event
 import ../../net_utils
 import esp_wifi_types
 
@@ -90,7 +90,9 @@ const
 
 type
   wifi_init_config_t* {.importc: "wifi_init_config_t", header: "esp_wifi.h".} = object
-    event_handler* {.importc: "event_handler".}: system_event_handler_t ## *< WiFi event handler
+    when ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0):
+      event_handler* {.importc: "event_handler".}: system_event_handler_t ## *< WiFi event handler
+
     osi_funcs* {.importc: "osi_funcs".}: ptr wifi_osi_funcs_t ## *< WiFi OS functions
     wpa_crypto_funcs* {.importc: "wpa_crypto_funcs".}: wpa_crypto_funcs_t ## *< WiFi station crypto functions when connect
     static_rx_buf_num* {.importc: "static_rx_buf_num".}: cint ## *< WiFi static RX buffer number
@@ -98,17 +100,35 @@ type
     tx_buf_type* {.importc: "tx_buf_type".}: cint ## *< WiFi TX buffer type
     static_tx_buf_num* {.importc: "static_tx_buf_num".}: cint ## *< WiFi static TX buffer number
     dynamic_tx_buf_num* {.importc: "dynamic_tx_buf_num".}: cint ## *< WiFi dynamic TX buffer number
+
+    when ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0):
+      rx_mgmt_buf_type* {.importc: "rx_mgmt_buf_type".}: cint ## *< WiFi RX MGMT buffer type
+      rx_mgmt_buf_num* {.importc: "rx_mgmt_buf_num".}: cint ## *< WiFi RX MGMT buffer number
+      cache_tx_buf_num* {.importc: "cache_tx_buf_num".}: cint ## *< WiFi TX cache buffer number
+
     csi_enable* {.importc: "csi_enable".}: cint ## *< WiFi channel state information enable flag
     ampdu_rx_enable* {.importc: "ampdu_rx_enable".}: cint ## *< WiFi AMPDU RX feature enable flag
     ampdu_tx_enable* {.importc: "ampdu_tx_enable".}: cint ## *< WiFi AMPDU TX feature enable flag
     nvs_enable* {.importc: "nvs_enable".}: cint ## *< WiFi NVS flash enable flag
     nano_enable* {.importc: "nano_enable".}: cint ## *< Nano option for printf/scan family enable flag
-    tx_ba_win* {.importc: "tx_ba_win".}: cint ## *< WiFi Block Ack TX window size
+
+    when ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0):
+      tx_ba_win* {.importc: "tx_ba_win".}: cint ## *< WiFi Block Ack TX window size
+
     rx_ba_win* {.importc: "rx_ba_win".}: cint ## *< WiFi Block Ack RX window size
     wifi_task_core_id* {.importc: "wifi_task_core_id".}: cint ## *< WiFi Task Core ID
     beacon_max_len* {.importc: "beacon_max_len".}: cint ## *< WiFi softAP maximum length of the beacon
     mgmt_sbuf_num* {.importc: "mgmt_sbuf_num".}: cint ## *< WiFi management short buffer number, the minimum value is 6, the maximum value is 32
     feature_caps* {.importc: "feature_caps".}: uint64 ## *< Enables additional WiFi features and capabilities
+
+    when ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0):
+      sta_disconnected_pm* {.importc: "sta_disconnected_pm".}: bool ## *< WiFi Power Management for station at disconnected status
+      espnow_max_encrypt_num* {.importc: "espnow_max_encrypt_num".}: cint ## *< Maximum encrypt number of peers supported by espnow
+
+    when ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 3, 0):
+      tx_hetb_queue_num* {.importc: "tx_hetb_queue_num".}: cint ## *< WiFi TX HE TB QUEUE number for STA HE TB PPDU transmission */
+      dump_hesigb_enable* {.importc: "dump_hesigb_enable".}: bool ## *< enable dump sigb field */
+
     magic* {.importc: "magic".}: cint ## *< WiFi init magic number, it should be the last field
 
 

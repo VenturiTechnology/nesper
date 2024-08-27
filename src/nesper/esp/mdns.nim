@@ -13,7 +13,8 @@
 
 import ../consts
 import ../net_utils
-import ../esp/esp_event_legacy
+
+import ../esp/esp_event
 
 import ../esp/net/esp_netif
 
