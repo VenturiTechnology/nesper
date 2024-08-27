@@ -4,11 +4,19 @@ ARG IMAGE=ghcr.io/embeddednim/esp-idf:${ESP_IDF_VERSION}-nim_${NIM_VERSION}-late
 
 FROM $IMAGE AS build
 
+ARG ESP_IDF_VERSION # inherit args
+ARG NIM_VERSION
+
 COPY . /app/
 
 WORKDIR /app/
-RUN nim -v
-RUN nimble install -y
+RUN : \
+  && nimble install -y
 
 RUN : \
-  && nimble test
+  && echo "NIM VERSION: " \
+  && nim -v \
+  && echo "ESP_IDF_VERSION: " $ESP_IDF_VERSION
+
+# RUN : \
+#   && nimble test
