@@ -7,6 +7,7 @@ FROM $IMAGE AS build
 COPY . /app/
 
 WORKDIR /app/
+RUN nim -v
 RUN nimble install -y
 
 RUN : \
