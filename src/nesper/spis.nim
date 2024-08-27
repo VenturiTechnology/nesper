@@ -268,13 +268,12 @@ proc getData*(trn: SpiTrans): seq[byte] =
   else:
     return trn.rx_data.toSeq()
 
+{.push stacktrace: off.}
 proc getSmallData*(trn: SpiTrans): array[4, uint8] =
   if trn.trn.rxlength > 32:
     raise newException(SpiError, "transaction data too large")
 
   return trn.trn.rx_data
-
-
 
 proc pollingStart*(trn: SpiTrans, ticks_to_wait: TickType_t = portMAX_DELAY) {.inline.} = 
   let ret = spi_device_polling_start(trn.dev.handle, addr(trn.trn), ticks_to_wait)
@@ -290,6 +289,7 @@ proc poll*(trn: SpiTrans, ticks_to_wait: TickType_t = portMAX_DELAY) {.inline.} 
   let ret: esp_err_t = spi_device_polling_transmit(trn.dev.handle, addr(trn.trn))
   if (ret != ESP_OK):
     raise newEspError[SpiError]("spi polling (" & $esp_err_to_name(ret) & ")", ret)
+{.pop.}
 
 proc acquireBus*(trn: SpiDev, wait: TickType_t = portMAX_DELAY) {.inline.} = 
   let ret: esp_err_t = spi_device_acquire_bus(trn.handle, wait)

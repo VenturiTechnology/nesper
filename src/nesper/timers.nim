@@ -57,6 +57,7 @@ proc toMicros*(ts: Millis): Micros =
   return Micros(ts.uint64 * 1_000U)
 
 # void IRAM_ATTR delayMicroseconds(uint32_t us)
+{.push stacktrace: off.}
 proc delayMicros*(us: uint64): uint64 {.discardable.} =
   if us.uint64 == 0:
     return 0
@@ -71,6 +72,7 @@ proc delayMicros*(us: uint64): uint64 {.discardable.} =
     curr = microsRaw()
 
   return target-curr
+{.pop.}
 
 proc delayMillis*(ms: uint64): uint64 {.discardable.} =
   var start = millis()
@@ -89,8 +91,10 @@ proc delay*(ts: Micros) {.discardable.} = discard delayMicros(ts.uint64)
 proc newBasicTimer*(): BasicTimer =
   return BasicTimer(ts: micros())
 
-proc elapsed*(timer: BasicTimer): Micros =
+{.push stacktrace: off.}
+proc elapsed*(timer: BasicTimer): Micros {.inline.} =
   return micros() - timer.ts
+{.pop.}
 
 proc reset*(timer: var BasicTimer) =
   timer.ts = micros()
