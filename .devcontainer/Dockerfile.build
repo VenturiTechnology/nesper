@@ -16,7 +16,5 @@ RUN : \
 RUN : \
   && echo "NIM VERSION: " \
   && nim -v \
-  && echo "ESP_IDF_VERSION: " $ESP_IDF_VERSION
-
-# RUN : \
-#   && nimble test
+  && echo "ESP_IDF_VERSION: " $ESP_IDF_VERSION \
+  && nimble test
