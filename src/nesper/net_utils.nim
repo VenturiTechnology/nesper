@@ -72,8 +72,10 @@ proc toIpAddress*(address: uint32): IpAddress =
 proc toIpAddress*(address: array[4, uint32]): IpAddress =
   result = IpAddress(family: IpAddressFamily.IPv6)
   for i in 0..3:
+    let subaddr = address[i]
+    echo "SUBADDR: ", subaddr.repr
     for j in 0..3:
-      result.address_v6[i] = uint8(address[i] shr (j*8))
+      result.address_v6[i*4+j] = uint8(subaddr shr (j*8))
 
 when defined(ESP_IDF_V4_0):
   proc toIpAddress*(ip: ip4_addr_t): IpAddress =
