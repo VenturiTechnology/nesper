@@ -37,6 +37,7 @@ proc createTimer*(
 
   return out_handle
 
+{.push stacktrace: off.}
 
 proc microsRaw*(): uint64 {.inline.} =
   return cast[uint64](esp_timer_get_time())
@@ -57,7 +58,6 @@ proc toMicros*(ts: Millis): Micros =
   return Micros(ts.uint64 * 1_000U)
 
 # void IRAM_ATTR delayMicroseconds(uint32_t us)
-{.push stacktrace: off.}
 proc delayMicros*(us: uint64): uint64 {.discardable.} =
   if us.uint64 == 0:
     return 0
@@ -72,7 +72,6 @@ proc delayMicros*(us: uint64): uint64 {.discardable.} =
     curr = microsRaw()
 
   return target-curr
-{.pop.}
 
 proc delayMillis*(ms: uint64): uint64 {.discardable.} =
   var start = millis()
@@ -91,10 +90,8 @@ proc delay*(ts: Micros) {.discardable.} = discard delayMicros(ts.uint64)
 proc newBasicTimer*(): BasicTimer =
   return BasicTimer(ts: micros())
 
-{.push stacktrace: off.}
 proc elapsed*(timer: BasicTimer): Micros {.inline.} =
   return micros() - timer.ts
-{.pop.}
 
 proc reset*(timer: var BasicTimer) =
   timer.ts = micros()
@@ -120,6 +117,8 @@ proc waitFor*(timer: BasicTimer, duration: Millis): Millis {.discardable.} =
   else:
     delayMillis((te - curr).uint64)
     return millis() - ts
+
+{.pop.}
 
 template timeBlock*(n: string, blk: untyped): untyped =
   let t0 = micros()
