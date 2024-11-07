@@ -63,11 +63,11 @@ type
 
 type
   pcnt_evt_type_t* {.size: sizeof(cint).} = enum
-    PCNT_EVT_L_LIM = 0,         ## !< PCNT watch point event: Minimum counter value
-    PCNT_EVT_H_LIM = 1,         ## !< PCNT watch point event: Maximum counter value
-    PCNT_EVT_THRES_0 = 2,       ## !< PCNT watch point event: threshold0 value event
-    PCNT_EVT_THRES_1 = 3,       ## !< PCNT watch point event: threshold1 value event
-    PCNT_EVT_ZERO = 4,          ## !< PCNT watch point event: counter value zero event
+    PCNT_EVT_THRES_1 = 4,       ## !< PCNT watch point event: threshold1 value event
+    PCNT_EVT_THRES_0 = 8,       ## !< PCNT watch point event: threshold0 value event
+    PCNT_EVT_L_LIM = 16,        ## !< PCNT watch point event: Minimum counter value
+    PCNT_EVT_H_LIM = 32,        ## !< PCNT watch point event: Maximum counter value
+    PCNT_EVT_ZERO = 64,         ## !< PCNT watch point event: counter value zero event
     PCNT_EVT_MAX
 
 
