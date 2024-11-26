@@ -71,7 +71,7 @@ const
 ##
 
 type
-  esp_image_header_t* {.importc: "esp_image_header_t", header: "esp_app_format.h",
+  esp_image_header_t* {.importc: "esp_image_header_t", header: "esp_app_desc.h",
                        bycopy.} = object
     magic* {.importc: "magic".}: uint8 ## !< Magic word ESP_IMAGE_HEADER_MAGIC
     segment_count* {.importc: "segment_count".}: uint8 ## !< Count of memory segments
@@ -109,7 +109,7 @@ const
 ##
 
 type
-  esp_app_desc_t* {.importc: "esp_app_desc_t", header: "esp_app_format.h", bycopy.} = object
+  esp_app_desc_t* {.importc: "esp_app_desc_t", header: "esp_app_desc.h", bycopy.} = object
     magic_word* {.importc: "magic_word".}: uint32 ## !< Magic word ESP_APP_DESC_MAGIC_WORD
     secure_version* {.importc: "secure_version".}: uint32 ## !< Secure version
     reserv1* {.importc: "reserv1".}: array[2, uint32] ## !< reserv1
