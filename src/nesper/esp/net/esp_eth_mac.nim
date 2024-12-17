@@ -230,11 +230,10 @@ proc esp_eth_mac_new_dm9051*(dm9051_config: ptr eth_dm9051_config_t;
                             mac_config: ptr eth_mac_config_t): ptr esp_eth_mac_t {.
     importc: "esp_eth_mac_new_dm9051", header: "esp_eth_mac.h".}
 
-
-
 type
   eth_w5500_config_t* {.bycopy.} = object
-    spi_hdl*: pointer        ## !< Handle of SPI device driver
+    spi_host_id*: spi_host_device_t
+    spi_devcfg*: ptr spi_device_interface_config_t
     int_gpio_num*: cint      ## !< Interrupt GPIO number
 
   ## *

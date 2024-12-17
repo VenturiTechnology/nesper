@@ -5,6 +5,11 @@ type
   # maybe try distinct type later
   esp_intr_flags* = distinct uint32
 
+import strutils
+const
+  ESP_IDF_VERSION* {.strdefine.} = "5.1"
+  ESP_IDF_MAJOR* {.intdefine.} = ESP_IDF_VERSION.split(".")[0].parseInt()
+  ESP_IDF_MINOR* {.intdefine.} = ESP_IDF_VERSION.split(".")[1].parseInt()
 
 import strutils
 from os import getEnv

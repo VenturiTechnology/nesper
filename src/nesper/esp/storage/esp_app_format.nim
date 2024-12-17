@@ -71,7 +71,7 @@ const
 ##
 
 type
-  esp_image_header_t* {.importc: "esp_image_header_t", header: "esp_app_format.h",
+  esp_image_header_t* {.importc: "esp_image_header_t", header: "esp_app_desc.h",
                        bycopy.} = object
     magic* {.importc: "magic".}: uint8 ## !< Magic word ESP_IMAGE_HEADER_MAGIC
     segment_count* {.importc: "segment_count".}: uint8 ## !< Count of memory segments
