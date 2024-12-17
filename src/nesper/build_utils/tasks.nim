@@ -15,6 +15,7 @@ type
     args: seq[string]
     child_args: seq[string]
     cachedir: string
+    esp_idf_major: string
     esp_idf_version: string
     wifi_args: string
     debug: bool
@@ -87,7 +88,7 @@ proc parseNimbleArgs(): NimbleArgs =
     flags = idf_args.filterIt(it.contains(":")).mapIt(it.split(":")).mapIt( (it[0], it[1])).toTable()
     esp32_template  = flags.getOrDefault("--esp32-template", "networking")
     app_template  = flags.getOrDefault("--app-template", "http_server")
-    esp_idf_ver  = flags.getOrDefault("--esp-idf-version", "V4.0").replace(".", "_").toUpper()
+    esp_idf_ver  = flags.getOrDefault("--esp-idf-version", "V4.0").toUpper().strip(chars={'V'})
 
   # echo "APP_TEMPLATE ANY: ", idf_args.any(x => x.startsWith("--app-template"))
   # echo "APP_IDF_ARGS: ", idf_args, " ", "--dist-clean" in idf_args
@@ -105,7 +106,7 @@ proc parseNimbleArgs(): NimbleArgs =
     esp32_template: esp32_template,
     app_template: app_template,
     # forceupdatecache = "--forceUpdateCache" in idf_args
-    esp_idf_version: "ESP_IDF_$1" % [esp_idf_ver], # FIXME
+    esp_idf_version: esp_idf_ver, # FIXME
     wifi_args: wifidefs,
     debug: "--esp-debug" in idf_args,
     forceclean: "--clean" in idf_args,
@@ -219,6 +220,8 @@ task esp_compile, "Compile Nim project for esp-idf program":
     echo "...cleaning esp-idf build cache"
     rmDir(nopts.projdir / "build")
 
+  var esp_idf_version_formatted = nopts.esp_idf_version[0..2]
+  echo "ESP IDF VERSION: ", esp_idf_version_formatted
   let
     nimargs = @[
       "c",
@@ -227,7 +230,8 @@ task esp_compile, "Compile Nim project for esp-idf program":
       "--compileOnly",
       "--nimcache:" & nopts.cachedir.quoteShell(),
       "-d:NimAppMain",
-      "-d:" & nopts.esp_idf_version
+      "-d:ESP_IDF_V" & esp_idf_version_formatted.replace(".","_"),
+      "-d:ESP_IDF_VERSION=" & esp_idf_version_formatted,
     ].join(" ") 
     childargs = nopts.child_args.mapIt(it.quoteShell()).join(" ")
     wifidefs = nopts.wifi_args

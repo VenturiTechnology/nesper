@@ -11,7 +11,7 @@ export uart
 export consts
 export gpios.gpio_num_t
 
-import bytesequtils
+# import bytesequtils
 
 const TAG = "uarts"
 
@@ -151,10 +151,10 @@ proc read*(
 #   result = read(uart, size, wait, buff)
 
 proc write*(uart: var Uart;
-            data: string): SzBytes {.discardable.} =
+            data: openArray[byte]): SzBytes {.discardable.} =
 
   # // Write data to UART.
-  let bytes_written = uart_write_bytes(uart.port, data, data.len().csize_t)
+  let bytes_written = uart_write_bytes(uart.port, cast[cstring](data[0].unsafeAddr), data.len().csize_t)
   
   result = bytes_written.SzBytes()
 
@@ -162,8 +162,8 @@ proc write*(uart: var Uart;
             data: var seq[byte],
             ): SzBytes {.discardable.} =
   # var buff = data[0..data.len]
-  var str = data.toStrBuf()
-  write(uart, str)
+
+  write(uart, data.toOpenArray(0, data.high()))
 
 
 proc write*[ArrSize](

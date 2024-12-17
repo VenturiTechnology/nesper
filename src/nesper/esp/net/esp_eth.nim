@@ -21,8 +21,6 @@ export esp_eth_com
 export esp_eth_mac
 export esp_eth_phy
 
-# import ../esp_event_legacy
-
 ## *
 ##  @brief Handle of Ethernet driver
 ##

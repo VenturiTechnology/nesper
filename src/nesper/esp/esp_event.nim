@@ -13,9 +13,11 @@
 ##  limitations under the License.
 
 import ../consts
-import esp_event_legacy
 
-export esp_event_legacy
+when ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0):
+  import esp_event_legacy
+
+  export esp_event_legacy
 
 
 ## / Configuration for creating event loops
