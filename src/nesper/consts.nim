@@ -37,7 +37,7 @@ const
 
 template ESP_IDF_VERSION_STR*: string = $ESP_IDF_MAJOR & "." & $ESP_IDF_MINOR & "." & $ESP_IDF_PATCH
 
-static:    
+static:
   if ESP_IDF_VERSION == ESP_IDF_VERSION_VAL(0, 0, 0):
     warning("ESP_IDF_VERSION: " & ESP_IDF_VER)
     error("Must set esp-idf version using `-d:ESP_IDF_VERSION=4.4` or using an environment variable `export ESP_IDF_VERSION=4.4`")
@@ -83,7 +83,7 @@ template borrowBasicOperations(typ: typedesc) =
 
   proc `$` *(v: typ): string {.borrow.}
 
-type 
+type
   SzBytes* = distinct int
   SzKiloBytes* = distinct int
   SzMegaBytes* = distinct int
@@ -95,7 +95,7 @@ borrowBasicOperations(SzMegaBytes)
 converter toSzBytes*(kb: SzKiloBytes): SzBytes = SzBytes(1024 * kb.int)
 converter toSzytes*(kb: SzMegaBytes): SzBytes = SzBytes(1024 * 1024 * kb.int)
 
-type 
+type
   Millis* = distinct uint64
   Micros* = distinct uint64
   Hertz* = distinct uint32
@@ -179,9 +179,8 @@ type
 type
   ## *< a number that identifies an event with respect to a base
   esp_event_handler_t* = proc (event_handler_arg: pointer;
-                               event_base: esp_event_base_t;
-                               event_id: int32;
-                               event_data: pointer) {.cdecl.}
+                            event_base: esp_event_base_t; event_id: int32;
+                            event_data: pointer) {.cdecl.}
 
 type
   bits* = distinct int
