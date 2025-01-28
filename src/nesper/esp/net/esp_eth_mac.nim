@@ -236,6 +236,14 @@ type
     spi_devcfg*: ptr spi_device_interface_config_t
     int_gpio_num*: cint      ## !< Interrupt GPIO number
 
+type
+  eth_w5500_config_t* {.importc: "eth_w5500_config_t", header: "esp_eth_mac_spi.h",
+                        bycopy.} = object
+    spi_host_id* {.importc: "spi_host_id".}: spi_host_device_t
+    spi_devcfg* {.importc: "spi_devcfg".}: ptr spi_device_interface_config_t
+    int_gpio_num* {.importc: "int_gpio_num".}: cint
+    poll_period_ms* {.importc: "poll_period_ms".}: uint32
+
   ## *
   ##  @brief Default W5500 specific configuration
   ##
