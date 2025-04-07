@@ -282,7 +282,7 @@ proc esp_vfs_fat_rawflash_unmount*(base_path : cstring, cpartition_label : cstri
 
 proc esp_vfs_fat_spiflash_format_rw_wl*(base_path: cstring;
                                        partition_label: cstring): esp_err_t {.
-    importc: "esp_vfs_fat_spiflash_format_rw_wl", header: "esp_vfs_fat.h".}
+    importc: "esp_vfs_fat_spiflash_format_rw_wl", header: theader.}
 
 ##
 ##  @brief Convenience function to initialize FAT filesystem in SPI flash and register it in VFS
@@ -314,7 +314,7 @@ proc esp_vfs_fat_spiflash_format_rw_wl*(base_path: cstring;
 proc esp_vfs_fat_spiflash_mount_rw_wl*(base_path: cstring;
                                       partition_label: cstring; mount_config: ptr esp_vfs_fat_mount_config_t;
                                       wl_handle: ptr wl_handle_t): esp_err_t {.
-    importc: "esp_vfs_fat_spiflash_mount_rw_wl", header: "esp_vfs_fat.h".}
+    importc: "esp_vfs_fat_spiflash_mount_rw_wl", header: theader.}
 
 ##
 ## @brief Unmount FAT filesystem and release resources acquired using esp_vfs_fat_spiflash_mount_rw_wl
@@ -329,6 +329,4 @@ proc esp_vfs_fat_spiflash_mount_rw_wl*(base_path: cstring;
 
 proc esp_vfs_fat_spiflash_unmount_rw_wl*(base_path: cstring;
                                       wl_handle: ptr wl_handle_t): esp_err_t {.
-    importc: "esp_vfs_fat_spiflash_mount_rw_wl", header: "esp_vfs_fat.h".}
-
-esp_err_t esp_vfs_fat_spiflash_unmount_rw_wl(const char* base_path, wl_handle_t wl_handle);
+    importc: "esp_vfs_fat_spiflash_mount_rw_wl", header: theader.}
