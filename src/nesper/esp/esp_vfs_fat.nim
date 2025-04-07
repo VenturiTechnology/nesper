@@ -250,3 +250,85 @@ proc esp_vfs_fat_rawflash_mount*(base_path : cstring,
 
 proc esp_vfs_fat_rawflash_unmount*(base_path : cstring, cpartition_label : cstring) : esp_err_t {.cdecl, importc: "esp_vfs_fat_rawflash_unmount", header: theader.}
 
+##
+## @brief Unmount FAT filesystem and release resources acquired using esp_vfs_fat_rawflash_mount
+##
+## @param base_path  path where partition should be registered (e.g. "/spiflash")
+## @param partition_label label of partition to be unmounted
+##
+## @return
+##      - ESP_OK on success
+##      - ESP_ERR_INVALID_STATE if esp_vfs_fat_spiflash_mount hasn't been called
+##
+
+proc esp_vfs_fat_rawflash_unmount*(base_path : cstring, cpartition_label : cstring) : esp_err_t {.cdecl, importc: "esp_vfs_fat_rawflash_unmount", header: theader.}
+
+##
+##  @brief Format FAT filesystem
+##
+##  @note
+##  This API can be called when the FAT is mounted / not mounted.
+##  If this API is called when the FAT isn't mounted (by calling esp_vfs_fat_spiflash_mount_rw_wl),
+##  this API will first mount the FAT then format it, then restore back to the original state.
+##
+##  @param base_path        Path where partition should be registered (e.g. "/spiflash")
+##  @param partition_label  Label of the partition which should be used
+##
+##  @return
+##         - ESP_OK
+##         - ESP_ERR_NO_MEM: if memory can not be allocated
+##         - Other errors from esp_vfs_fat_spiflash_mount_rw_wl
+##
+
+proc esp_vfs_fat_spiflash_format_rw_wl*(base_path: cstring;
+                                       partition_label: cstring): esp_err_t {.
+    importc: "esp_vfs_fat_spiflash_format_rw_wl", header: "esp_vfs_fat.h".}
+
+##
+##  @brief Convenience function to initialize FAT filesystem in SPI flash and register it in VFS
+##
+##  This is an all-in-one function which does the following:
+##
+##  - finds the partition with defined partition_label. Partition label should be
+##    configured in the partition table.
+##  - initializes flash wear levelling library on top of the given partition
+##  - mounts FAT partition using FATFS library on top of flash wear levelling
+##    library
+##  - registers FATFS library with VFS, with prefix given by base_prefix variable
+##
+##  This function is intended to make example code more compact.
+##
+##  @param base_path        path where FATFS partition should be mounted (e.g. "/spiflash")
+##  @param partition_label  label of the partition which should be used
+##  @param mount_config     pointer to structure with extra parameters for mounting FATFS
+##  @param[out] wl_handle   wear levelling driver handle
+##  @return
+##       - ESP_OK on success
+##       - ESP_ERR_NOT_FOUND if the partition table does not contain FATFS partition with given label
+##       - ESP_ERR_INVALID_STATE if esp_vfs_fat_spiflash_mount_rw_wl was already called
+##       - ESP_ERR_NO_MEM if memory can not be allocated
+##       - ESP_FAIL if partition can not be mounted
+##       - other error codes from wear levelling library, SPI flash driver, or FATFS drivers
+##
+
+proc esp_vfs_fat_spiflash_mount_rw_wl*(base_path: cstring;
+                                      partition_label: cstring; mount_config: ptr esp_vfs_fat_mount_config_t;
+                                      wl_handle: ptr wl_handle_t): esp_err_t {.
+    importc: "esp_vfs_fat_spiflash_mount_rw_wl", header: "esp_vfs_fat.h".}
+
+##
+## @brief Unmount FAT filesystem and release resources acquired using esp_vfs_fat_spiflash_mount_rw_wl
+##
+## @param base_path  path where partition should be registered (e.g. "/spiflash")
+## @param wl_handle  wear levelling driver handle returned by esp_vfs_fat_spiflash_mount_rw_wl
+##
+## @return
+##      - ESP_OK on success
+##      - ESP_ERR_INVALID_STATE if esp_vfs_fat_spiflash_mount_rw_wl hasn't been called
+##
+
+proc esp_vfs_fat_spiflash_unmount_rw_wl*(base_path: cstring;
+                                      wl_handle: ptr wl_handle_t): esp_err_t {.
+    importc: "esp_vfs_fat_spiflash_mount_rw_wl", header: "esp_vfs_fat.h".}
+
+esp_err_t esp_vfs_fat_spiflash_unmount_rw_wl(const char* base_path, wl_handle_t wl_handle);

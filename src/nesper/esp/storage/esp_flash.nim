@@ -62,7 +62,7 @@ type
     # os_func* {.importc: "os_func".}: ptr esp_flash_os_functions_t ## /< Pointer to os-specific hook structure. Call ``esp_flash_init_os_functions()`` to setup this field, after the host is properly initialized.
     # os_func_data* {.importc: "os_func_data".}: pointer ## /< Pointer to argument for os-specific hooks. Left NULL and will be initialized with ``os_func``.
     # read_mode* {.importc: "read_mode".}: esp_flash_io_mode_t ## /< Configured SPI flash read mode. Set before ``esp_flash_init`` is called.
-    # size* {.importc: "size".}: uint32 ## /< Size of SPI flash in bytes. If 0, size will be detected during initialisation.
+    size* {.importc: "size".}: uint32 ## /< Size of SPI flash in bytes. If 0, size will be detected during initialisation.
     chip_id* {.importc: "chip_id".}: uint32 ## /< Detected chip id.
 
 
