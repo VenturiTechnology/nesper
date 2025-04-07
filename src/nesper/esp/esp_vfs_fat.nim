@@ -315,5 +315,5 @@ proc esp_vfs_fat_spiflash_mount_rw_wl*(base_path: cstring;
 ##
 
 proc esp_vfs_fat_spiflash_unmount_rw_wl*(base_path: cstring;
-                                      wl_handle: ptr wl_handle_t): esp_err_t {.
-    importc: "esp_vfs_fat_spiflash_mount_rw_wl", header: theader.}
+                                      wl_handle: wl_handle_t): esp_err_t {.
+    importc: "esp_vfs_fat_spiflash_unmount_rw_wl", header: theader.}
