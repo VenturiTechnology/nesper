@@ -251,19 +251,6 @@ proc esp_vfs_fat_rawflash_mount*(base_path : cstring,
 proc esp_vfs_fat_rawflash_unmount*(base_path : cstring, cpartition_label : cstring) : esp_err_t {.cdecl, importc: "esp_vfs_fat_rawflash_unmount", header: theader.}
 
 ##
-## @brief Unmount FAT filesystem and release resources acquired using esp_vfs_fat_rawflash_mount
-##
-## @param base_path  path where partition should be registered (e.g. "/spiflash")
-## @param partition_label label of partition to be unmounted
-##
-## @return
-##      - ESP_OK on success
-##      - ESP_ERR_INVALID_STATE if esp_vfs_fat_spiflash_mount hasn't been called
-##
-
-proc esp_vfs_fat_rawflash_unmount*(base_path : cstring, cpartition_label : cstring) : esp_err_t {.cdecl, importc: "esp_vfs_fat_rawflash_unmount", header: theader.}
-
-##
 ##  @brief Format FAT filesystem
 ##
 ##  @note
