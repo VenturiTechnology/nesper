@@ -1362,7 +1362,7 @@ proc uxTaskGetNumberOfTasks*(): UBaseType_t {.importc: "uxTaskGetNumberOfTasks",
 ##
 
 proc pcTaskGetTaskName*(xTaskToQuery: TaskHandle_t): cstring {.
-    importc: "pcTaskGetTaskName", header: theader.}
+    importc: "pcTaskGetName", header: theader.}
 ## lint !e971 Unqualified char types are allowed for strings and single characters only.
 ## *
 ##  Returns the high water mark of the stack associated with xTask.
