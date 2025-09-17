@@ -259,3 +259,16 @@ proc esp_timer_get_next_alarm*(): int64 {.importc: "esp_timer_get_next_alarm",
 
 proc esp_timer_dump*(stream: ptr FILE): esp_err_t {.importc: "esp_timer_dump",
     header: "esp_timer.h".}
+
+##
+##  @brief Returns status of a timer, active or not
+##
+##  This function is used to identify if the timer is still active or not.
+##
+##  @param timer timer handle created using esp_timer_create
+##  @return
+##       - 1 if timer is still active
+##       - 0 if timer is not active.
+##
+
+proc esp_timer_is_active*(timer: esp_timer_handle_t): bool {.importc: "esp_timer_is_active", header: "esp_timer.h".}

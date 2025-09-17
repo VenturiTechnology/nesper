@@ -14,6 +14,11 @@ type
 
 proc esp_log_timestamp*(): uint32 {.importc: "esp_log_timestamp", header: "esp_log.h".}
 
+proc esp_log_level_get*(tag: cstring): esp_log_level_t {.
+  cdecl, importc: "esp_log_level_get", header: "esp_log.h".}
+proc esp_log_level_set*(tag: cstring, level: esp_log_level_t) {.
+  cdecl, importc: "esp_log_level_set", header: "esp_log.h".}
+
 proc esp_log_write*(level: esp_log_level_t, tag: cstring, format: cstring) {.
   importc: "esp_log_write", varargs, header: "esp_log.h".}
 
@@ -25,7 +30,7 @@ proc logv*(tag: cstring, formatstr: cstring) {.importc: "ESP_LOGV", varargs, hea
 
 proc log_timestamp*(): uint32 {.cdecl, importc: "esp_log_timestamp", header: "esp_log.h".}
 
-type 
+type
   MallocCapacity* = enum
     MALLOC_CAP_EXEC     = BIT(0)  # ///< Memory must be able to run executable code
     MALLOC_CAP_32BIT    = BIT(1)  # ///< Memory must allow for aligned 32-bit data accesses
